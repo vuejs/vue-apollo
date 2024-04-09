@@ -9,6 +9,9 @@ export default defineConfig({
   ],
   themeConfig: {
     lastUpdated: true,
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/vuejs/apollo' },
+    ],
     footer: {
       message: `Released under the MIT License.`,
       copyright: `Copyright © 2015-present Guillaume Chau`,
