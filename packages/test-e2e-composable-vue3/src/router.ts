@@ -93,5 +93,9 @@ export const router = createRouter({
         layout: 'blank',
       },
     },
+    {
+      path: '/update-query',
+      component: () => import('./components/UpdateQuery.vue'),
+    },
   ],
 })
