@@ -3,12 +3,13 @@ import {
   Ref,
   ref,
   watch,
-  isRef,
   computed,
   getCurrentScope,
   onScopeDispose,
   nextTick,
   shallowRef,
+  MaybeRefOrGetter,
+  toRef,
 } from 'vue-demi'
 import type {
   OperationVariables,
@@ -21,9 +22,6 @@ import type {
   ApolloClient,
 } from '@apollo/client/core/index.js'
 import { throttle, debounce } from 'throttle-debounce'
-import { ReactiveFunction } from './util/ReactiveFunction'
-import { paramToRef } from './util/paramToRef'
-import { paramToReactive } from './util/paramToReactive'
 import { useApolloClient } from './useApolloClient'
 import { useEventHook } from './util/useEventHook'
 import { trackSubscription } from './util/loadingTracking'
@@ -41,9 +39,9 @@ export interface UseSubscriptionOptions <
   debounce?: number
 }
 
-type DocumentParameter<TResult, TVariables> = DocumentNode | Ref<DocumentNode> | ReactiveFunction<DocumentNode> | TypedDocumentNode<TResult, TVariables> | Ref<TypedDocumentNode<TResult, TVariables>> | ReactiveFunction<TypedDocumentNode<TResult, TVariables>>
-type VariablesParameter<TVariables> = TVariables | Ref<TVariables> | ReactiveFunction<TVariables>
-type OptionsParameter<TResult, TVariables> = UseSubscriptionOptions<TResult, TVariables> | Ref<UseSubscriptionOptions<TResult, TVariables>> | ReactiveFunction<UseSubscriptionOptions<TResult, TVariables>>
+type DocumentParameter<TResult, TVariables> = DocumentNode | TypedDocumentNode<TResult, TVariables>
+type VariablesParameter<TVariables> = TVariables
+type OptionsParameter<TResult, TVariables> = UseSubscriptionOptions<TResult, TVariables>
 
 export interface OnResultContext {
   client: ApolloClient<any>
@@ -62,7 +60,7 @@ export interface UseSubscriptionReturn<TResult, TVariables> {
   restart: () => void
   document: Ref<DocumentNode>
   variables: Ref<TVariables | undefined>
-  options: UseSubscriptionOptions<TResult, TVariables> | Ref<UseSubscriptionOptions<TResult, TVariables>>
+  options: Ref<UseSubscriptionOptions<TResult, TVariables>>
   subscription: Ref<Observable<FetchResult<TResult, Record<string, any>, Record<string, any>>> | null>
   onResult: (fn: (param: FetchResult<TResult, Record<string, any>, Record<string, any>>, context: OnResultContext) => void) => {
     off: () => void
@@ -76,55 +74,55 @@ export interface UseSubscriptionReturn<TResult, TVariables> {
  * Use a subscription that does not require variables or options.
  * */
 export function useSubscription<TResult = any> (
-  document: DocumentParameter<TResult, undefined>
+  document: MaybeRefOrGetter<DocumentParameter<TResult, undefined>>
 ): UseSubscriptionReturn<TResult, undefined>
 
 /**
  * Use a subscription that requires options but not variables.
  */
 export function useSubscription<TResult = any> (
-  document: DocumentParameter<TResult, undefined>,
+  document: MaybeRefOrGetter<DocumentParameter<TResult, undefined>>,
   variables: undefined | null,
-  options: OptionsParameter<TResult, null>
+  options: MaybeRefOrGetter<OptionsParameter<TResult, null>>
 ): UseSubscriptionReturn<TResult, null>
 
 /**
  * Use a subscription that requires variables.
  */
 export function useSubscription<TResult = any, TVariables extends OperationVariables = OperationVariables> (
-  document: DocumentParameter<TResult, TVariables>,
-  variables: VariablesParameter<TVariables>
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
+  variables: MaybeRefOrGetter<VariablesParameter<TVariables>>
 ): UseSubscriptionReturn<TResult, TVariables>
 
 /**
  * Use a subscription that has optional variables.
  */
 export function useSubscription<TResult = any, TVariables extends OperationVariables = OperationVariables> (
-  document: DocumentParameter<TResult, TVariables>,
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
 ): UseSubscriptionReturn<TResult, TVariables>
 
 /**
  * Use a subscription that requires variables and options.
  */
 export function useSubscription<TResult = any, TVariables extends OperationVariables = OperationVariables> (
-  document: DocumentParameter<TResult, TVariables>,
-  variables: VariablesParameter<TVariables>,
-  options: OptionsParameter<TResult, TVariables>
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
+  variables: MaybeRefOrGetter<VariablesParameter<TVariables>>,
+  options: MaybeRefOrGetter<OptionsParameter<TResult, TVariables>>
 ): UseSubscriptionReturn<TResult, TVariables>
 
 export function useSubscription <
   TResult,
   TVariables extends Record<string, unknown>
 > (
-  document: DocumentParameter<TResult, TVariables>,
-  variables: VariablesParameter<TVariables> | undefined = undefined,
-  options: OptionsParameter<TResult, TVariables> = {},
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
+  variables: MaybeRefOrGetter<VariablesParameter<TVariables> | undefined> = undefined,
+  options: MaybeRefOrGetter<OptionsParameter<TResult, TVariables>> = {},
 ): UseSubscriptionReturn<TResult, TVariables> {
   const currentScope = getCurrentScope()
 
-  const documentRef = paramToRef(document)
-  const variablesRef = paramToRef(variables)
-  const optionsRef = paramToReactive(options)
+  const documentRef = toRef(document)
+  const variablesRef = toRef(variables) as Ref<TVariables | undefined>
+  const optionsRef = toRef(options)
 
   const result = shallowRef<TResult | null | undefined>()
   const resultEvent = useEventHook<[FetchResult<TResult>, OnResultContext]>()
@@ -233,7 +231,7 @@ export function useSubscription <
 
   // Applying options
   const currentOptions = ref<UseSubscriptionOptions<TResult, TVariables>>()
-  watch(() => isRef(optionsRef) ? optionsRef.value : optionsRef, value => {
+  watch(optionsRef, value => {
     if (currentOptions.value && (
       currentOptions.value.throttle !== value.throttle ||
       currentOptions.value.debounce !== value.debounce

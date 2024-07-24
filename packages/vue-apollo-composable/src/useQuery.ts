@@ -1,7 +1,6 @@
 import {
   ref,
   Ref,
-  unref,
   computed,
   watch,
   onServerPrefetch,
@@ -10,6 +9,8 @@ import {
   onScopeDispose,
   nextTick,
   shallowRef,
+  MaybeRefOrGetter,
+  toRef,
 } from 'vue-demi'
 import { DocumentNode } from 'graphql'
 import type {
@@ -27,9 +28,6 @@ import type {
 } from '@apollo/client/core/index.js'
 import { throttle, debounce } from 'throttle-debounce'
 import { useApolloClient } from './useApolloClient'
-import { ReactiveFunction } from './util/ReactiveFunction'
-import { paramToRef } from './util/paramToRef'
-import { paramToReactive } from './util/paramToReactive'
 import { useEventHook } from './util/useEventHook'
 import { trackQuery } from './util/loadingTracking'
 import { resultErrorsToApolloError, toApolloError } from './util/toApolloError'
@@ -54,9 +52,9 @@ interface SubscribeToMoreItem {
 }
 
 // Parameters
-export type DocumentParameter<TResult, TVariables> = DocumentNode | Ref<DocumentNode | null | undefined> | ReactiveFunction<DocumentNode | null | undefined> | TypedDocumentNode<TResult, TVariables> | Ref<TypedDocumentNode<TResult, TVariables> | null | undefined> | ReactiveFunction<TypedDocumentNode<TResult, TVariables> | null | undefined>
-export type VariablesParameter<TVariables> = TVariables | Ref<TVariables> | ReactiveFunction<TVariables>
-export type OptionsParameter<TResult, TVariables extends OperationVariables> = UseQueryOptions<TResult, TVariables> | Ref<UseQueryOptions<TResult, TVariables>> | ReactiveFunction<UseQueryOptions<TResult, TVariables>>
+export type DocumentParameter<TResult, TVariables> = DocumentNode | TypedDocumentNode<TResult, TVariables> | null | undefined
+export type VariablesParameter<TVariables> = TVariables
+export type OptionsParameter<TResult, TVariables extends OperationVariables> = UseQueryOptions<TResult, TVariables>
 
 export interface OnResultContext {
   client: ApolloClient<any>
@@ -78,12 +76,12 @@ export interface UseQueryReturn<TResult, TVariables extends OperationVariables> 
   forceDisabled: Ref<boolean>
   document: Ref<DocumentNode | null | undefined>
   variables: Ref<TVariables | undefined>
-  options: UseQueryOptions<TResult, TVariables> | Ref<UseQueryOptions<TResult, TVariables>>
+  options: Ref<UseQueryOptions<TResult, TVariables>>
   query: Ref<ObservableQuery<TResult, TVariables> | null | undefined>
   refetch: (variables?: TVariables) => Promise<ApolloQueryResult<TResult>> | undefined
   fetchMore: (options: FetchMoreQueryOptions<TVariables, TResult> & FetchMoreOptions<TResult, TVariables>) => Promise<ApolloQueryResult<TResult>> | undefined
   updateQuery: (mapFn: (previousQueryResult: TResult, options: Pick<WatchQueryOptions<TVariables, TResult>, 'variables'>) => TResult) => void
-  subscribeToMore: <TSubscriptionVariables = OperationVariables, TSubscriptionData = TResult>(options: SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData> | Ref<SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData>> | ReactiveFunction<SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData>>) => void
+  subscribeToMore: <TSubscriptionVariables = OperationVariables, TSubscriptionData = TResult>(options: MaybeRefOrGetter<SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData>>) => void
   onResult: (fn: (param: ApolloQueryResult<TResult>, context: OnResultContext) => void) => {
     off: () => void
   }
@@ -96,49 +94,49 @@ export interface UseQueryReturn<TResult, TVariables extends OperationVariables> 
  * Use a query that does not require variables or options.
  * */
 export function useQuery<TResult = any> (
-  document: DocumentParameter<TResult, undefined>
+  document: MaybeRefOrGetter<DocumentParameter<TResult, undefined>>
 ): UseQueryReturn<TResult, Record<string, never>>
 
 /**
  * Use a query that has optional variables but not options
  */
 export function useQuery<TResult = any, TVariables extends OperationVariables = OperationVariables> (
-  document: DocumentParameter<TResult, TVariables>
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>
 ): UseQueryReturn<TResult, TVariables>
 
 /**
  * Use a query that has required variables but not options
  */
 export function useQuery<TResult = any, TVariables extends OperationVariables = OperationVariables> (
-  document: DocumentParameter<TResult, TVariables>,
-  variables: VariablesParameter<TVariables>
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
+  variables: MaybeRefOrGetter<VariablesParameter<TVariables>>
 ): UseQueryReturn<TResult, TVariables>
 
 /**
  * Use a query that requires options but not variables.
  */
 export function useQuery<TResult = any> (
-  document: DocumentParameter<TResult, undefined>,
+  document: MaybeRefOrGetter<DocumentParameter<TResult, undefined>>,
   variables: undefined | null,
-  options: OptionsParameter<TResult, Record<string, never>>,
+  options: MaybeRefOrGetter<OptionsParameter<TResult, Record<string, never>>>,
 ): UseQueryReturn<TResult, Record<string, never>>
 
 /**
  * Use a query that requires variables and options.
  */
 export function useQuery<TResult = any, TVariables extends OperationVariables = OperationVariables> (
-  document: DocumentParameter<TResult, TVariables>,
-  variables: VariablesParameter<TVariables>,
-  options: OptionsParameter<TResult, TVariables>,
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
+  variables: MaybeRefOrGetter<VariablesParameter<TVariables>>,
+  options: MaybeRefOrGetter<OptionsParameter<TResult, TVariables>>,
 ): UseQueryReturn<TResult, TVariables>
 
 export function useQuery<
   TResult,
   TVariables extends OperationVariables
 > (
-  document: DocumentParameter<TResult, TVariables>,
-  variables?: VariablesParameter<TVariables>,
-  options?: OptionsParameter<TResult, TVariables>,
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
+  variables?: MaybeRefOrGetter<VariablesParameter<TVariables>>,
+  options?: MaybeRefOrGetter<OptionsParameter<TResult, TVariables>>,
 ): UseQueryReturn<TResult, TVariables> {
   return useQueryImpl<TResult, TVariables>(document, variables, options)
 }
@@ -147,9 +145,9 @@ export function useQueryImpl<
   TResult,
   TVariables extends OperationVariables
 > (
-  document: DocumentParameter<TResult, TVariables>,
-  variables?: VariablesParameter<TVariables>,
-  options: OptionsParameter<TResult, TVariables> = {},
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
+  variables?: MaybeRefOrGetter<VariablesParameter<TVariables>>,
+  options: MaybeRefOrGetter<OptionsParameter<TResult, TVariables>> = {},
   lazy = false,
 ): UseQueryReturn<TResult, TVariables> {
   const currentScope = getCurrentScope()
@@ -157,9 +155,9 @@ export function useQueryImpl<
 
   const currentOptions = ref<UseQueryOptions<TResult, TVariables>>()
 
-  const documentRef = paramToRef(document)
-  const variablesRef = paramToRef(variables)
-  const optionsRef = paramToReactive(options)
+  const documentRef = toRef(document)
+  const variablesRef = toRef(variables) as Ref<TVariables | undefined>
+  const optionsRef = toRef(options)
 
   // Result
   /**
@@ -255,7 +253,7 @@ export function useQueryImpl<
     if (isServer) {
       applyDocument(documentRef.value)
       applyVariables(variablesRef.value)
-      applyOptions(unref(optionsRef))
+      applyOptions(optionsRef.value)
     }
 
     started = true
@@ -478,7 +476,7 @@ export function useQueryImpl<
   const isEnabled = computed(() => enabledOption.value && !forceDisabled.value && !!documentRef.value)
 
   // Applying options first (in case it disables the query)
-  watch(() => unref(optionsRef), applyOptions, {
+  watch(optionsRef, applyOptions, {
     deep: true,
     immediate: true,
   })
@@ -574,12 +572,10 @@ export function useQueryImpl<
     TSubscriptionVariables = OperationVariables,
     TSubscriptionData = TResult
   > (
-    options: SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData> |
-    Ref<SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData>> |
-    ReactiveFunction<SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData>>,
+    options: MaybeRefOrGetter<SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData>>,
   ) {
     if (isServer) return
-    const optionsRef = paramToRef(options)
+    const optionsRef = toRef(options)
     watch(optionsRef, (value, oldValue, onCleanup) => {
       const index = subscribeToMoreItems.findIndex(item => item.options === oldValue)
       if (index !== -1) {
