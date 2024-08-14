@@ -81,6 +81,7 @@ export interface UseQueryReturn<TResult, TVariables extends OperationVariables> 
   query: Ref<ObservableQuery<TResult, TVariables> | null | undefined>
   refetch: (variables?: TVariables) => Promise<ApolloQueryResult<TResult>> | undefined
   fetchMore: (options: FetchMoreQueryOptions<TVariables, TResult> & FetchMoreOptions<TResult, TVariables>) => Promise<ApolloQueryResult<TResult>> | undefined
+  updateQuery: (mapFn: (previousQueryResult: TResult, options: Pick<WatchQueryOptions<TVariables, TResult>, 'variables'>) => TResult) => void
   subscribeToMore: <TSubscriptionVariables = OperationVariables, TSubscriptionData = TResult>(options: SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData> | Ref<SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData>> | ReactiveFunction<SubscribeToMoreOptions<TResult, TSubscriptionVariables, TSubscriptionData>>) => void
   onResult: (fn: (param: ApolloQueryResult<TResult>, context: OnResultContext) => void) => {
     off: () => void
@@ -534,6 +535,14 @@ export function useQueryImpl<
     }
   }
 
+  // Update Query
+
+  function updateQuery (mapFn: (previousQueryResult: TResult, options: Pick<WatchQueryOptions<TVariables, TResult>, 'variables'>) => TResult) {
+    if (query.value) {
+      query.value.updateQuery(mapFn)
+    }
+  }
+
   // Fetch more
 
   function fetchMore (options: FetchMoreQueryOptions<TVariables, TResult> & FetchMoreOptions<TResult, TVariables>) {
@@ -637,6 +646,7 @@ export function useQueryImpl<
     refetch,
     fetchMore,
     subscribeToMore,
+    updateQuery,
     onResult: resultEvent.on,
     onError: errorEvent.on,
   }
