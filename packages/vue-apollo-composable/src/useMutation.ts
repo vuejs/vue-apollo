@@ -1,6 +1,6 @@
 import { DocumentNode } from 'graphql'
 import { MutationOptions, OperationVariables, FetchResult, TypedDocumentNode, ApolloError, ApolloClient } from '@apollo/client/core/index.js'
-import { ref, onScopeDispose, isRef, Ref, getCurrentScope, shallowRef } from 'vue-demi'
+import { ref, onScopeDispose, isRef, Ref, getCurrentScope, shallowRef, nextTick } from 'vue-demi'
 import { useApolloClient } from './useApolloClient'
 import { ReactiveFunction } from './util/ReactiveFunction'
 import { useEventHook } from './util/useEventHook'
@@ -100,6 +100,7 @@ export function useMutation<
           : undefined,
       })
       loading.value = false
+      await nextTick()
       doneEvent.trigger(result, {
         client,
       })
