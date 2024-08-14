@@ -1,5 +1,34 @@
 # Changelog
 
+## v4.1.0
+
+
+### 🩹 Fixes
+
+  - Change teardown to use onScopeDispose (#1545)
+
+### 📖 Documentation
+
+  - **useQuery:** Document refetch with new variables (#1564)
+
+### 🏡 Chore
+
+  - Updqte pnpm to v9 (827ea6e)
+
+### ✅ Tests
+
+  - UseSubscription (0f5ae61)
+  - Fix subscription test (#1547)
+
+### 🤖 CI
+
+  - Update versions (fe66840)
+
+### ❤️  Contributors
+
+- Guillaume Chau ([@Akryum](http://github.com/Akryum))
+- Nick Messing ([@nickmessing](http://github.com/nickmessing))
+
 ## v4.0.2
 
 
