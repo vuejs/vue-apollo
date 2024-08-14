@@ -115,11 +115,14 @@ export function installMixin (app, provider) {
       if (isServer) {
         // Patch render function to cleanup apollo
         const render = this.$options.ssrRender
+        if (!render) return
+        if (render.__IS_VUE_APOLLO_WRAPPED) return
         this.$options.ssrRender = (h) => {
           const result = render.call(this, h)
           destroy.call(this)
           return result
         }
+        this.$options.ssrRender.__IS_VUE_APOLLO_WRAPPED = true
       }
     },
 
