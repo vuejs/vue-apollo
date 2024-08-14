@@ -700,6 +700,63 @@ export default {
 </template>
 ```
 
+### Providing new variables to `refetch`
+
+You call `refetch` with a new set of variables like so:
+
+```vue{41}
+<script>
+import { useQuery } from '@vue/apollo-composable'
+import gql from 'graphql-tag'
+
+export default {
+  setup () {
+    const { result, loading, error, refetch } = useQuery(gql`
+      query getUsers($search: String) {
+        users(search: $search) {
+          id
+          firstname
+          lastname
+          email
+        }
+      }
+    `)
+
+    const users = computed(() => result.value?.users)
+
+    return {
+      users,
+      loading,
+      error,
+      refetch,
+    }
+  },
+}
+</script>
+
+<template>
+  <div v-if="loading">Loading...</div>
+
+  <div v-else-if="error">Error: {{ error.message }}</div>
+
+  <ul v-else-if="users">
+    <li v-for="user of users" :key="user.id">
+      {{ user.firstname }} {{ user.lastname }}
+    </li>
+
+    <button
+      @click="refetch({ search: 'some search input' })"
+    >
+      Search "some search input"
+    </button>
+  </ul>
+</template>
+```
+
+::: warning
+If you provide new values for **some** of your original query's variables but not **all** of them, `refetch` uses each omitted variable's original value.
+:::
+
 ## Event hooks
 
 `useQuery` returns event hooks allowing you to execute code when a specific event occurs.
