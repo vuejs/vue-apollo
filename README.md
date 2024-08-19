@@ -16,6 +16,14 @@
 
 [:heart: Sponsor me!](https://github.com/sponsors/Akryum)
 
+## Continuous Releases
+
+You can install builds from any commit or pull request by going to the `Continuous Releases` status check or the comment in the PR.
+
+![screenshot of the status check](./.github/continuous-releases.png)
+
+## Monorepo
+
 In this monorepository:
 
 | Package | Description |
