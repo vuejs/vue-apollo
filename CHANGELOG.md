@@ -1,5 +1,40 @@
 # Changelog
 
+## v4.2.0
+
+
+### 🚀 Enhancements
+
+  - Add updateQuery to useQuery (#1552)
+
+### 🩹 Fixes
+
+  - UseMutations onDone Event hook gets triggered too early (#1559)
+  - (@vue/apollo-option) memory leak in wrapped ssrRender (#1553)
+  - Reuse previous result, fix #1483 (#1569, #1483)
+  - ResolveClient throwing too soon, fix #1557 (#1570, #1557)
+
+### 📖 Documentation
+
+  - Add github link to documentation (#1549)
+  - Note about continuous releases (51e09e7)
+
+### 🏡 Chore
+
+  - Switch some tests to script setup (c8e5106)
+
+### 🤖 CI
+
+  - Nightly releases (319f6ec)
+
+### ❤️  Contributors
+
+- Guillaume Chau ([@Akryum](http://github.com/Akryum))
+- Matt Garrett <mattga@gmail.com>
+- Mobsean ([@mobsean](http://github.com/mobsean))
+- Leonardo Santos ([@syllomex](http://github.com/syllomex))
+- Alex Liu ([@Mini-ghost](http://github.com/Mini-ghost))
+
 ## v4.1.0
 
 
