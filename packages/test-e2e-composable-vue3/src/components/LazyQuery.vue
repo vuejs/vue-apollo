@@ -1,36 +1,25 @@
-<script lang="ts">
+<script lang="ts" setup>
 import gql from 'graphql-tag'
 import { useLazyQuery } from '@vue/apollo-composable'
-import { defineComponent, computed, ref } from 'vue'
+import { computed, ref } from 'vue'
 
-export default defineComponent({
-  setup () {
-    const { result, loading, load, refetch } = useLazyQuery(gql`
-      query list {
-        list
-      }
-    `)
-    const list = computed(() => result.value?.list ?? [])
+const { result, loading, load, refetch } = useLazyQuery(gql`
+  query list {
+    list
+  }
+`)
+const list = computed(() => result.value?.list ?? [])
 
-    const refetched = ref(false)
+const refetched = ref(false)
 
-    function r () {
-      refetched.value = true
-      refetch()
-    }
+function r () {
+  refetched.value = true
+  refetch()
+}
 
-    function loadOrRefetch () {
-      load() || r()
-    }
-
-    return {
-      loadOrRefetch,
-      loading,
-      list,
-      refetched,
-    }
-  },
-})
+function loadOrRefetch () {
+  load() || r()
+}
 </script>
 
 <template>

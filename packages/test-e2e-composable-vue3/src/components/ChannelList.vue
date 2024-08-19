@@ -1,35 +1,26 @@
-<script lang="ts">
+<script lang="ts" setup>
 import gql from 'graphql-tag'
 import { useQuery } from '@vue/apollo-composable'
-import { defineComponent, computed } from 'vue'
+import { computed } from 'vue'
 
 interface Channel {
   id: string
   label: string
 }
 
-export default defineComponent({
-  setup () {
-    const { result, loading } = useQuery<{ channels: Channel[] }>(gql`
-      query channels {
-        channels {
-          ...channel
-        }
-      }
-
-      fragment channel on Channel {
-        id
-        label
-      }
-    `)
-    const channels = computed(() => result.value?.channels ?? [])
-
-    return {
-      loading,
-      channels,
+const { result, loading } = useQuery<{ channels: Channel[] }>(gql`
+  query channels {
+    channels {
+      ...channel
     }
-  },
-})
+  }
+
+  fragment channel on Channel {
+    id
+    label
+  }
+`)
+const channels = computed(() => result.value?.channels ?? [])
 </script>
 
 <template>
