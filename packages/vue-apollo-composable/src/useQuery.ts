@@ -341,7 +341,13 @@ export function useQueryImpl<
   }
 
   function processNextResult (queryResult: ApolloQueryResult<TResult>) {
-    result.value = queryResult.data && Object.keys(queryResult.data).length === 0 ? undefined : queryResult.data
+    result.value = queryResult.data && Object.keys(queryResult.data).length === 0
+      ? queryResult.error &&
+        !currentOptions.value?.returnPartialData &&
+        currentOptions.value?.errorPolicy === 'none'
+        ? undefined
+        : result.value
+      : queryResult.data
     loading.value = queryResult.loading
     networkStatus.value = queryResult.networkStatus
     // Wait for handlers to be registered
