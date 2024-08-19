@@ -1,14 +1,13 @@
+<p align="center">
+  <img src="./packages/docs/src/public/hero.svg" width="256">
+</p>
+
 # Apollo and GraphQL for Vue.js
 
 [![npm](https://img.shields.io/npm/v/@vue/apollo-composable.svg) ![npm](https://img.shields.io/npm/dm/@vue/apollo-composable.svg)](https://www.npmjs.com/package/@vue/apollo-composable)
 [![apollo3](https://img.shields.io/badge/apollo-3.x-blue.svg)](https://www.apollographql.com/)
 [![vue3](https://img.shields.io/badge/vue-3-brightgreen.svg)](https://vuejs.org/)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/vuejs/apollo/v4)
-
-<p align="center">
-  <img src="./packages/docs/src/public/hero.svg" width="512">
-</p>
-
 
 :book: Documentation [**for Vue 3**](http://v4.apollo.vuejs.org) | [for Vue 2](https://apollo.vuejs.org/)
 
