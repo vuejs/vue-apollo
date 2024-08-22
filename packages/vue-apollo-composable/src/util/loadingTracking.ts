@@ -1,4 +1,4 @@
-import { Ref, watch, onUnmounted, ref, getCurrentScope, onScopeDispose } from 'vue-demi'
+import { Ref, watch, ref, getCurrentScope, onScopeDispose } from 'vue-demi'
 import { isServer } from './env.js'
 
 import type { EffectScope } from 'vue-demi'
@@ -36,7 +36,7 @@ export function getCurrentTracking () {
       subscriptions: ref(0),
     })
     // Cleanup
-    onUnmounted(() => {
+    onScopeDispose(() => {
       globalTracking.components.delete(currentScope)
     })
   } else {
