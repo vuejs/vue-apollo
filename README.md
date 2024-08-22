@@ -17,9 +17,7 @@
 
 ## Continuous Releases
 
-You can install builds from any commit or pull request by going to the `Continuous Releases` status check or the comment in the PR.
-
-![screenshot of the status check](./.github/continuous-releases.png)
+You can install builds from any commit on the main branch from [here](https://nightly.akryum.dev/vuejs/vue-apollo) or from any Pull Request.
 
 ## Monorepo
 
