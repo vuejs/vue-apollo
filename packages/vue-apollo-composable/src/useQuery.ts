@@ -6,6 +6,7 @@ import {
   watch,
   onServerPrefetch,
   getCurrentScope,
+  getCurrentInstance,
   onScopeDispose,
   nextTick,
   shallowRef,
@@ -152,6 +153,7 @@ export function useQueryImpl<
   lazy = false,
 ): UseQueryReturn<TResult, TVariables> {
   const currentScope = getCurrentScope()
+  const currentInstance = getCurrentInstance()
 
   const currentOptions = ref<UseQueryOptions<TResult, TVariables>>()
 
@@ -200,7 +202,7 @@ export function useQueryImpl<
     firstRejectError = undefined
   }
 
-  currentScope && onServerPrefetch?.(() => {
+  currentInstance && onServerPrefetch?.(() => {
     if (!isEnabled.value || (isServer && currentOptions.value?.prefetch === false)) return
 
     return new Promise<void>((resolve, reject) => {
