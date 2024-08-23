@@ -1,5 +1,27 @@
 # Changelog
 
+## v4.2.1
+
+
+### 🩹 Fixes
+
+  - Improved pinia support (#1571)
+
+### 📖 Documentation
+
+  - Update broken circleci badge (9622392)
+  - Readme smaller logo (ff836ea)
+  - Use nightly.akryum.dev (7f3cf7d)
+
+### 🏡 Chore
+
+  - Specify pnpm version in package.json (732e66e)
+
+### ❤️  Contributors
+
+- Nick Messing ([@nickmessing](http://github.com/nickmessing))
+- Guillaume Chau ([@Akryum](http://github.com/Akryum))
+
 ## v4.2.0
 
 
