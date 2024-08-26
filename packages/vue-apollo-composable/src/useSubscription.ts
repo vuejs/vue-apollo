@@ -257,7 +257,7 @@ export function useSubscription <
   // Applying variables
   let currentVariables: TVariables | undefined
   let currentVariablesSerialized: string
-  watch(variablesRef, (value, oldValue) => {
+  watch(variablesRef, (value) => {
     const serialized = JSON.stringify(value)
     if (serialized !== currentVariablesSerialized) {
       currentVariables = value

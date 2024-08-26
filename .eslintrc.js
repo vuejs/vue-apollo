@@ -9,7 +9,7 @@ module.exports = {
     '@vue/typescript/recommended',
   ],
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 2022,
   },
   globals: {
     name: 'off',
@@ -46,6 +46,9 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'warn',
     'no-return-assign': 'off',
     'multiline-ternary': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    'no-undef': 'off',
+    'vue/multi-word-component-names': 'off',
   },
   overrides: [
     {

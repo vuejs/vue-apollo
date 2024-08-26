@@ -4,10 +4,10 @@ const channels = [
   { id: 'help', name: 'Ask for or give help' },
 ]
 
-exports.getAll = (context) => {
+exports.getAll = () => {
   return channels
 }
 
-exports.getOne = (id, context) => {
+exports.getOne = (id) => {
   return channels.find(c => c.id === id)
 }
