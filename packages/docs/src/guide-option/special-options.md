@@ -3,7 +3,7 @@
 
 The special options begin with `$` in the `apollo` object.
 
-- `$skip` to disable all queries and subscriptions (see below)
+- `$skipAll` to disable all queries and subscriptions (see below)
 - `$skipAllQueries` to disable all queries (see below)
 - `$skipAllSubscriptions` to disable all subscriptions (see below)
 - `$deep` to watch with `deep: true` on the properties above when a function is provided
