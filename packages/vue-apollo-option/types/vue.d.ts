@@ -2,7 +2,7 @@ import { DollarApollo } from './vue-apollo'
 import { VueApolloComponentOptions } from './options'
 import { ApolloProvider } from './apollo-provider'
 
-declare module '@vue/runtime-core' {
+declare module 'vue' {
   interface ComponentOptionsBase<
     Props,
     RawBindings,
