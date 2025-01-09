@@ -27,6 +27,15 @@ export function getCurrentTracking () {
   }
 
   let tracking: LoadingTracking
+  if (isServer) {
+    // SSR does not support onScopeDispose, so if we don't skip this, it will leak memory
+    tracking = {
+      queries: ref(0),
+      mutations: ref(0),
+      subscriptions: ref(0),
+    }
+    return { tracking }
+  }
 
   if (!globalTracking.components.has(currentScope)) {
     // Add per-component tracking
