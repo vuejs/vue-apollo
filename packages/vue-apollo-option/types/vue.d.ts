@@ -12,6 +12,7 @@ declare module 'vue' {
     Mixin extends ComponentOptionsMixin,
     Extends extends ComponentOptionsMixin,
     E extends EmitsOptions,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EE extends string = string,
     // eslint-disable-next-line @typescript-eslint/ban-types
     Defaults = {}

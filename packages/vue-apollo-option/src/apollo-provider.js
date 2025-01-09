@@ -22,7 +22,7 @@ export class ApolloProvider {
 
   install (app) {
     // Options merging
-    app.config.optionMergeStrategies.apollo = function (toVal, fromVal, vm) {
+    app.config.optionMergeStrategies.apollo = function (toVal, fromVal) {
       if (!toVal) return fromVal
       if (!fromVal) return toVal
 

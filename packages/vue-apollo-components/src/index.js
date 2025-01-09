@@ -4,7 +4,7 @@ import CApolloMutation from './ApolloMutation'
 
 const plugin = {}
 
-export function install (app, options) {
+export function install (app) {
   app.component('ApolloQuery', CApolloQuery)
   app.component('ApolloSubscribeToMore', CApolloSubscribeToMore)
   app.component('ApolloMutation', CApolloMutation)

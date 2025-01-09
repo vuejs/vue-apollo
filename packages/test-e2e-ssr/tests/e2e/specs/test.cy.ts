@@ -4,7 +4,7 @@ describe('Vue 3 + Apollo Composable', () => {
   })
 
   it('loads channels', () => {
-    cy.intercept('http://localhost:4042/graphql', (req) => {
+    cy.intercept('http://localhost:4042/graphql', () => {
       throw new Error('Should not be called')
     })
     cy.visit('/')
@@ -17,7 +17,7 @@ describe('Vue 3 + Apollo Composable', () => {
 
   it('load one channel', () => {
     let shouldCallGraphQL = false
-    cy.intercept('http://localhost:4042/graphql', (req) => {
+    cy.intercept('http://localhost:4042/graphql', () => {
       if (!shouldCallGraphQL) {
         throw new Error('Should not be called')
       }

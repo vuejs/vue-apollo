@@ -16,6 +16,7 @@ import {
   VueApolloSubscriptionDefinition,
 } from './options'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface SmartApollo<V> {
   skip: boolean
   refresh(): void
@@ -65,5 +66,6 @@ export interface DollarApollo<V> extends ApolloClientMethods {
   getClient<R = any>(): ApolloClient<R>
 
   addSmartQuery<R = any>(key: string, options: VueApolloQueryDefinition<R>): SmartQuery<V>
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addSmartSubscription<R = any>(key: string, options: VueApolloSubscriptionDefinition): SmartSubscription<V>
 }

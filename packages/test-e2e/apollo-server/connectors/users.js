@@ -14,7 +14,7 @@ function createDefaultUsers () {
 
 let users = createDefaultUsers()
 
-exports.register = (input, context) => {
+exports.register = (input) => {
   if (users.find(u => u.email === input.email)) {
     throw new Error('Email already used')
   }
@@ -34,7 +34,7 @@ exports.register = (input, context) => {
   })
 }
 
-exports.login = ({ email, password }, context) => {
+exports.login = ({ email, password }) => {
   const user = users.find(
     u => u.email === email && u.password === password,
   )
@@ -62,7 +62,7 @@ exports.logout = (context) => {
   return true
 }
 
-exports.getOne = (id, context) => {
+exports.getOne = (id) => {
   return users.find(u => u.id === id)
 }
 

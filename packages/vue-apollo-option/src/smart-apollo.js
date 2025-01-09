@@ -154,7 +154,7 @@ export default class SmartApollo {
     return apolloOptions
   }
 
-  executeApollo (variables) {
+  executeApollo () {
     this.starting = false
   }
 

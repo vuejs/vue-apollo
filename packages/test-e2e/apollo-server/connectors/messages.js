@@ -24,7 +24,7 @@ function publishChange ({ type, message }, context) {
   })
 }
 
-exports.getAll = (channelId, context) => {
+exports.getAll = (channelId) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(messages.filter(m => m.channelId === channelId))
@@ -32,7 +32,7 @@ exports.getAll = (channelId, context) => {
   })
 }
 
-exports.getOne = (id, context) => {
+exports.getOne = (id) => {
   return messages.find(m => m.id === id)
 }
 
@@ -70,7 +70,7 @@ exports.update = ({ id, content }, context) => {
   return message
 }
 
-exports.remove = (id, context) => {
+exports.remove = (id) => {
   const index = messages.findIndex(m => m.id === id)
   if (index === -1) throw new Error('Message not found')
   const message = messages[index]

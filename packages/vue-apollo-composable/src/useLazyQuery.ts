@@ -1,8 +1,8 @@
 import { DocumentNode } from 'graphql'
-import { isRef } from 'vue-demi'
 import { useQueryImpl, DocumentParameter, VariablesParameter, OptionsParameter, UseQueryOptions, UseQueryReturn } from './useQuery'
 import type { OperationVariables } from '@apollo/client/core'
 import { isServer } from './util/env.js'
+import { MaybeRefOrGetter } from 'vue-demi'
 
 export interface UseLazyQueryReturn<TResult, TVariables extends OperationVariables> extends UseQueryReturn<TResult, TVariables> {
   /**
@@ -19,9 +19,9 @@ export function useLazyQuery<
   TResult = any,
   TVariables extends Record<string, unknown> = any,
 > (
-  document: DocumentParameter<TResult, TVariables>,
-  variables?: VariablesParameter<TVariables>,
-  options?: OptionsParameter<TResult, TVariables>,
+  document: MaybeRefOrGetter<DocumentParameter<TResult, TVariables>>,
+  variables?: MaybeRefOrGetter<VariablesParameter<TVariables>>,
+  options?: MaybeRefOrGetter<OptionsParameter<TResult, TVariables>>,
 ): UseLazyQueryReturn<TResult, TVariables> {
   const query = useQueryImpl<TResult, TVariables>(document, variables, options, true)
 
@@ -37,7 +37,7 @@ export function useLazyQuery<
       query.variables.value = variables
     }
     if (options) {
-      Object.assign(isRef(query.options) ? query.options.value : query.options, options)
+      Object.assign(query.options.value, options)
     }
     const isFirstRun = query.forceDisabled.value
     if (isFirstRun) {

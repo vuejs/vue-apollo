@@ -39,7 +39,7 @@
     "@vue/cli-plugin-e2e-cypress": "^4.0.0",
     "@vue/cli-plugin-router": "^4.0.0",
     "@vue/cli-service": "^4.0.0",
-    "@vue/eslint-config-standard": "^4.0.0",
+    "@vue/eslint-config-standard": "^8.0.1",
     "graphql-tag": "^2.9.0",
     "start-server-and-test": "^1.10.6",
     "vue-cli-plugin-apollo": "^0.21.3",
